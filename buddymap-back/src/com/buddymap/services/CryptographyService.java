@@ -46,7 +46,7 @@ public class CryptographyService {
 	public static boolean checkSignature(Authentication authent,
 			Authentication storedAuthent) throws SignatureException {
 		//Checking of the client timestamp
-		if(authent.getClientTimestamp()==storedAuthent.getClientTimestamp() || authent.getClientTimestamp() < storedAuthent.getClientTimestamp()){
+		if(authent.getClientTimestamp()<=storedAuthent.getClientTimestamp()){
 			return false;
 		}
 		String generatedHash = null;
