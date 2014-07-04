@@ -8,12 +8,12 @@ import com.mongodb.DB;
 import com.mongodb.MongoClient;
 
 
-public final class ConnexionBD {
-	private static volatile ConnexionBD connec;
+public final class DBConnection {
+	private static volatile DBConnection connec;
 	private static DB db;
 	private Logger logger = Logger.getRootLogger();
 	
-	private ConnexionBD() {
+	private DBConnection() {
 			MongoClient mongoClient;
 			try {
 				mongoClient = new MongoClient();
@@ -24,10 +24,10 @@ public final class ConnexionBD {
 			}
 	}
 
-	public static ConnexionBD getInstance(){
-		synchronized(ConnexionBD.class){
+	public static DBConnection getInstance(){
+		synchronized(DBConnection.class){
 			if(connec==null){
-				connec = new ConnexionBD();
+				connec = new DBConnection();
 			}
 		}
 		return connec;
