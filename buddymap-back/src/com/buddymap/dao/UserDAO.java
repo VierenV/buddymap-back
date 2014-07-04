@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import com.buddymap.connection.ConnexionBD;
+import com.buddymap.connection.DBConnection;
 import com.buddymap.model.User;
 import com.buddymap.services.CryptographyService;
 import com.mongodb.BasicDBObject;
@@ -18,7 +18,7 @@ public class UserDAO extends AbstractDAO<User>{
 	private static final String COLLECTION_NAME = "users";
 	
 	public UserDAO(){
-		this.setCollec(ConnexionBD.getInstance().getDB().getCollection(COLLECTION_NAME));
+		this.setCollec(DBConnection.getInstance().getDB().getCollection(COLLECTION_NAME));
 	}
 
 	@Override

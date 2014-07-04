@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.bson.types.ObjectId;
 
-import com.buddymap.connection.ConnexionBD;
+import com.buddymap.connection.DBConnection;
 import com.buddymap.model.Event;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -16,7 +16,7 @@ public class EventDAO extends AbstractDAO<Event> {
 	private static final String COLLECTION_NAME = "events";
 	
 	public EventDAO(){
-		this.setCollec(ConnexionBD.getInstance().getDB().getCollection(COLLECTION_NAME));
+		this.setCollec(DBConnection.getInstance().getDB().getCollection(COLLECTION_NAME));
 	}
 	
 	@Override

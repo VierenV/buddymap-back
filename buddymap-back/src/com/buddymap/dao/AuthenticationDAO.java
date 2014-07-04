@@ -2,7 +2,7 @@ package com.buddymap.dao;
 
 import org.bson.types.ObjectId;
 
-import com.buddymap.connection.ConnexionBD;
+import com.buddymap.connection.DBConnection;
 import com.buddymap.model.Authentication;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
@@ -14,7 +14,7 @@ public class AuthenticationDAO extends AbstractDAO<Authentication>{
 	private static final String COLLECTION_NAME = "authentication";
 	
 	public AuthenticationDAO(){
-		this.setCollec(ConnexionBD.getInstance().getDB().getCollection(COLLECTION_NAME));
+		this.setCollec(DBConnection.getInstance().getDB().getCollection(COLLECTION_NAME));
 	}
 	
 	@Override
