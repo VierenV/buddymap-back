@@ -27,6 +27,10 @@ public class RequestFilter implements ContainerRequestFilter {
 
 	public ContainerRequest filter(ContainerRequest request) {
 		String path = request.getPath(true);
+		//If the nav comes with f****** OPTIONS
+		if("OPTIONS".equals(request.getMethod())){
+			return request;
+		}
 		//Cases where we don't need authentication
 		//If we want to create an user
 		if("users".equals(path) && "POST".equals(request.getMethod())){
