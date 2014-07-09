@@ -17,7 +17,7 @@ public class User {
 	private String id;
 	private String pseudo;
 	private String mail;
-	private String pwd;
+	private String password;
 	private String phone;
 	private double houseLatitude;
 	private double houseLongitude;
@@ -45,11 +45,11 @@ public class User {
 	public void setMail(String mail) {
 		this.mail = mail;
 	}
-	public String getPwd() {
-		return pwd;
+	public String getPassword() {
+		return password;
 	}
-	public void setPwd(String pwd) {
-		this.pwd = pwd;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	public String getPhone() {
 		return phone;

@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
 
+import com.buddymap.services.PropertiesLoader;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 
@@ -17,7 +18,7 @@ public final class DBConnection {
 			MongoClient mongoClient;
 			try {
 				mongoClient = new MongoClient();
-	        	DB dbase = mongoClient.getDB("buddyMap");
+	        	DB dbase = mongoClient.getDB(PropertiesLoader.getInstance().getDBName());
 	        	db = dbase;
 			} catch (UnknownHostException e) {
 				logger.error("Fail to connect to db", e);

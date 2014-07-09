@@ -41,7 +41,7 @@ public class UserDAO extends AbstractDAO<User>{
 		newDocument.put("houseLatitude", user.getHouseLatitude());
 		newDocument.put("houseLongitude", user.getHouseLongitude());
 		newDocument.put("lastRefresh", user.getLastRefresh());
-		newDocument.put("pwd", user.getPwd());
+		newDocument.put("pwd", user.getPassword());
 		
 		BasicDBObject searchQuery = new BasicDBObject().append("_id", new ObjectId(user.getId()));
 		WriteResult res = this.getCollec().update(searchQuery, newDocument);
@@ -60,7 +60,7 @@ public class UserDAO extends AbstractDAO<User>{
 		newDocument.put("houseLatitude", user.getHouseLatitude());
 		newDocument.put("houseLongitude", user.getHouseLongitude());
 		newDocument.put("lastRefresh", user.getLastRefresh());
-		newDocument.put("pwd", CryptographyService.hashSaltedSHA512(user.getPwd()+user.getMail()));
+		newDocument.put("pwd", CryptographyService.hashSaltedSHA512(user.getPassword()+user.getMail()));
 		
 		BasicDBObject query = new BasicDBObject();
 		query.put("mail", user.getMail());
@@ -92,7 +92,7 @@ public class UserDAO extends AbstractDAO<User>{
 			user.setMail(res.get("mail") != null ? res.get("mail").toString() : null);
 			user.setPhone(res.get("phone") != null ? res.get("phone").toString() : null);
 			user.setPseudo(res.get("pseudo") != null ? res.get("pseudo").toString() : null);
-			user.setPwd(res.get("pwd") != null ? res.get("pwd").toString() : null);
+			user.setPassword(res.get("pwd") != null ? res.get("pwd").toString() : null);
 			user.setEventMap(res.get("eventMap") != null ? (Map<Long, String>) res.get("eventMap") : null);
 			user.setFriendsList(res.get("friendsList") != null ? (List<String>) res.get("friendsList") : null);
 			
@@ -116,7 +116,7 @@ public class UserDAO extends AbstractDAO<User>{
 			user.setMail(res.get("mail") != null ? res.get("mail").toString() : null);
 			user.setPhone(res.get("phone") != null ? res.get("phone").toString() : null);
 			user.setPseudo(res.get("pseudo") != null ? res.get("pseudo").toString() : null);
-			user.setPwd(res.get("pwd") != null ? res.get("pwd").toString() : null);
+			user.setPassword(res.get("pwd") != null ? res.get("pwd").toString() : null);
 			user.setEventMap(res.get("eventMap") != null ? (Map<Long, String>) res.get("eventMap") : null);
 			user.setFriendsList(res.get("friendsList") != null ? (List<String>) res.get("friendsList") : null);
 			

@@ -1,23 +1,22 @@
 package com.buddymap.resources.filters;
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.container.ContainerResponseContext;
  
 public class ResponseFilter implements ContainerResponseFilter {
 
 
-	public ContainerResponse filter(ContainerRequest request,
-			ContainerResponse response) {
-		if(request.getProperties().get("encryptedToken") != null){
-			response.getHttpHeaders().add("Authorization", request.getProperties().get("encryptedToken"));
+	public void filter(ContainerRequestContext  request,
+			ContainerResponseContext response) {
+		if(request.getProperty("encryptedToken") != null){
+			response.getHeaders().add("Authorization", request.getProperty("encryptedToken"));
 		}
-		response.getHttpHeaders().add("Access-Control-Allow-Origin", "*");
-		response.getHttpHeaders().add("Access-Control-Allow-Referer", "*");
-		response.getHttpHeaders().add("Access-Control-Allow-Headers", "accept, origin, referer, content-type");
-		response.getHttpHeaders().add("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
-		response.getHttpHeaders().add("Access-Control-Expose-Headers", "Location");
-		return response;
+		response.getHeaders().add("Access-Control-Allow-Origin", "*");
+		response.getHeaders().add("Access-Control-Allow-Referer", "*");
+		response.getHeaders().add("Access-Control-Allow-Headers", "accept, origin, referer, content-type");
+		response.getHeaders().add("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
+		response.getHeaders().add("Access-Control-Expose-Headers", "Location");
 	}
  
 }

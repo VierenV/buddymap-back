@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.security.SignatureException;
 import java.util.Date;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonParseException;
@@ -17,31 +18,29 @@ import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
 import com.buddymap.model.User;
 import com.buddymap.services.CryptographyService;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
 
  
 public class RequestFilter implements ContainerRequestFilter {
 	private static final long TOKEN_VALIDITY = 600000;
 	private static Logger logger = Logger.getRootLogger();
 
-	public ContainerRequest filter(ContainerRequest request) {
-		String path = request.getPath(true);
+	public void filter(ContainerRequestContext request) {
+		String path = request.getUriInfo().getAbsolutePath().getPath();
 		//If the nav comes with f****** OPTIONS
 		if("OPTIONS".equals(request.getMethod())){
-			return request;
+			return;
 		}
 		//Cases where we don't need authentication
 		//If we want to create an user
-		if("users".equals(path) && "POST".equals(request.getMethod())){
-			return request;
+		if("/users".equals(path) && "POST".equals(request.getMethod())){
+			return;
 		}
 		//If we want to login
-		if(path != null && path.startsWith("authentication/") && "PUT".equals(request.getMethod())){
-			return request;
+		if(path != null && path.startsWith("/authentication/") && "PUT".equals(request.getMethod())){
+			return;
 		}
 		
-		String authorizationHeader = request.getHeaderValue("Authorization");
+		String authorizationHeader = request.getHeaderString("Authorization");
 		if(authorizationHeader != null){
 			ObjectMapper mapper = new ObjectMapper();
 			Authentication authent;
@@ -52,7 +51,10 @@ public class RequestFilter implements ContainerRequestFilter {
 					Authentication storedAuthent = authentDAO.find(authent.getMail());
 					if(storedAuthent == null){
 						logger.error("Stored authent not found "+authent.getMail());
-						throw new WebApplicationException(Status.UNAUTHORIZED);
+						request.abortWith(Response
+				                    .status(Response.Status.UNAUTHORIZED)
+				                    .entity("User cannot access the resource.")
+				                    .build());
 					}
 					if(CryptographyService.checkSignature(authent, storedAuthent)){
 						Authentication newAuthent = new Authentication();
@@ -71,41 +73,70 @@ public class RequestFilter implements ContainerRequestFilter {
 						int nbRes = authentDAO.update(newAuthent);
 						if(nbRes == 1){
 							if(newTokenGenerated){
-								request.getProperties().put("encryptedToken", newAuthent.getEncryptedToken());
+								request.setProperty("encryptedToken", newAuthent.getEncryptedToken());
 							}
 							UserDAO userDAO = new UserDAO();
 							User user = userDAO.findByMail(authent.getMail());
 							if(user == null){
 								logger.error("Unable to find user "+authent.getMail());
-								throw new WebApplicationException(Status.UNAUTHORIZED);
+								request.abortWith(Response
+					                    .status(Response.Status.UNAUTHORIZED)
+					                    .entity("User cannot access the resource.")
+					                    .build());
 							}else{
-								request.getProperties().put("connectedUser", user);
+								request.setProperty("connectedUser", user);
 							}
 						}else{
 							logger.error("Unable to store updated authent "+newAuthent.toString());
-							throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+							request.abortWith(Response
+				                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+				                    .build());
 						}
 					}else{
 						logger.error("Unacceptable signature "+authent.getMail()+":"+authent.getHashSignature());
-						throw new WebApplicationException(Status.UNAUTHORIZED);
+						request.abortWith(Response
+			                    .status(Response.Status.UNAUTHORIZED)
+			                    .entity("User cannot access the resource.")
+			                    .build());
 					}
 				}else{
-					throw new WebApplicationException(Status.UNAUTHORIZED);
+					request.abortWith(Response
+		                    .status(Response.Status.UNAUTHORIZED)
+		                    .entity("User cannot access the resource.")
+		                    .build());
 				}
 			} catch (JsonParseException e) {
-				throw new WebApplicationException(Status.UNAUTHORIZED);
+				logger.error(e);
+				request.abortWith(Response
+	                    .status(Response.Status.UNAUTHORIZED)
+	                    .entity("User cannot access the resource.")
+	                    .build());
 			} catch (JsonMappingException e) {
-				throw new WebApplicationException(Status.UNAUTHORIZED);
+				logger.error(e);
+				request.abortWith(Response
+	                    .status(Response.Status.UNAUTHORIZED)
+	                    .entity("User cannot access the resource.")
+	                    .build());
 			} catch (IOException e) {
-				throw new WebApplicationException(Status.UNAUTHORIZED);
+				logger.error(e);
+				request.abortWith(Response
+	                    .status(Response.Status.UNAUTHORIZED)
+	                    .entity("User cannot access the resource.")
+	                    .build());
 			} catch (SignatureException e) {
-				throw new WebApplicationException(Status.UNAUTHORIZED);
+				logger.error(e);
+				request.abortWith(Response
+	                    .status(Response.Status.UNAUTHORIZED)
+	                    .entity("User cannot access the resource.")
+	                    .build());
 			}
 			
 		}else{
-			throw new WebApplicationException(Status.UNAUTHORIZED);
+			request.abortWith(Response
+                    .status(Response.Status.UNAUTHORIZED)
+                    .entity("User cannot access the resource.")
+                    .build());
 		}
-		return request;
 	}
  
 }

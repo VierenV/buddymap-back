@@ -13,6 +13,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,14 +29,13 @@ import com.buddymap.dao.AuthenticationDAO;
 import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
 import com.buddymap.model.User;
-import com.sun.jersey.api.core.HttpContext;
 
 
 @Path("/users")
 public class UserResource {
 
 	@Context
-	protected HttpContext request;
+	protected ContainerRequestContext request;
 	private UserDAO userDAO = new UserDAO();
 	private AuthenticationDAO authentDAO = new AuthenticationDAO();
 	private static Logger logger = Logger.getRootLogger();
@@ -48,7 +48,7 @@ public class UserResource {
 		ObjectMapper mapper = new ObjectMapper();
 		if(user == null){
 			return Response.status(404).build();
-		}else if(!user.getId().equals(((User)request.getProperties().get("connectedUser")).getId())){
+		}else if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
 			return Response.status(401).build();
 		}else{
 			String fluxJson;
@@ -81,7 +81,7 @@ public class UserResource {
 			if(!user.getPseudo().matches("[a-zA-Z 0-9]+")){
 				return Response.status(400).entity("Wrong format : pseudo").build();
 			}
-			if(!user.getPwd().matches("[a-zA-Z 0-9-+\\*éàèêëîïôö\\.!]+")){
+			if(!user.getPassword().matches("[a-zA-Z 0-9-+\\*éàèêëîïôö\\.!]+")){
 				return Response.status(400).entity("Wrong format : password").build();
 			}
 			String nbRes = userDAO.create(user);
@@ -110,7 +110,7 @@ public class UserResource {
 		if(user == null){
 			return Response.status(404).entity("Unable to delete user").build();
 		}
-		if(!user.getId().equals(((User)request.getProperties().get("connectedUser")).getId())){
+		if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
 			return Response.status(401).build();
 		}
 		int nbRes = userDAO.delete(idUser);
@@ -128,7 +128,7 @@ public class UserResource {
 		if (user == null) {
 			return Response.status(400)
 					.entity("Syntax error : user").build();
-		} else if(!idUser.equals(((User)request.getProperties().get("connectedUser")).getId())){
+		} else if(!idUser.equals(((User)request.getProperty("connectedUser")).getId())){
 			return Response.status(401).build();
 		}else {
 			if(!user.getMail().matches("^[A-Za-z0-9\\._-]+@[A-Za-z0-9\\.-_]+.[a-zA-Z]{2,4}$")){
@@ -137,7 +137,7 @@ public class UserResource {
 			if(!user.getPseudo().matches("[a-zA-Z 0-9]+")){
 				return Response.status(400).entity("Wrong format : pseudo").build();
 			}
-			if(!user.getPwd().matches("[a-zA-Z 0-9-+\\*éàèêëîïôö\\.!]+")){
+			if(!user.getPassword().matches("[a-zA-Z 0-9-+\\*éàèêëîïôö\\.!]+")){
 				return Response.status(400).entity("Wrong format : password").build();
 			}
 			user.setId(idUser);

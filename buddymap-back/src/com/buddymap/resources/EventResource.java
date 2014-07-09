@@ -12,6 +12,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,14 +27,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.buddymap.dao.EventDAO;
 import com.buddymap.model.Event;
 import com.buddymap.model.User;
-import com.sun.jersey.api.core.HttpContext;
 
 
 @Path("/events")
 public class EventResource {
 	
 	@Context
-	protected HttpContext request;
+	protected ContainerRequestContext request;
 	
 	private EventDAO eventDAO = new EventDAO();
 	private static Logger logger = Logger.getRootLogger();
@@ -46,7 +46,7 @@ public class EventResource {
 		ObjectMapper mapper = new ObjectMapper();
 		if(event == null){
 			return Response.status(404).build();
-		}else if(event.getGuestMap().get(((User)request.getProperties().get("connectedUser")).getMail()) == null){
+		}else if(event.getGuestMap().get(((User)request.getProperty("connectedUser")).getMail()) == null){
 			return Response.status(401).build();
 		}else{
 			String fluxJson;
@@ -103,7 +103,7 @@ public class EventResource {
 		if(event == null){
 			return Response.status(404).entity("Unable to delete event").build();
 		}
-		if(!event.getIdUser().equals(((User)request.getProperties().get("connectedUser")).getId())){
+		if(!event.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
 			return Response.status(401).build();
 		}
 		int nbRes = eventDAO.delete(idEvent);
@@ -126,7 +126,7 @@ public class EventResource {
 			if(eventStored == null){
 				return Response.status(404).entity("Unable to delete event").build();
 			}
-			if(!eventStored.getIdUser().equals(((User)request.getProperties().get("connectedUser")).getId())){
+			if(!eventStored.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
 				return Response.status(401).build();
 			}
 			if(!event.getTitle().matches("[a-zA-Z 0-9-<>\\.]+")){

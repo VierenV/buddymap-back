@@ -7,6 +7,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -16,14 +17,13 @@ import com.buddymap.dao.AuthenticationDAO;
 import com.buddymap.model.Authentication;
 import com.buddymap.services.AuthenticationService;
 import com.buddymap.services.CryptographyService;
-import com.sun.jersey.api.core.HttpContext;
 
 
 @Path("/authentication")
 public class AuthenticationResource {
 
 	@Context
-	protected HttpContext request;
+	protected ContainerRequestContext request;
 	private AuthenticationDAO authentDAO = new AuthenticationDAO();
 	
 	@PUT
