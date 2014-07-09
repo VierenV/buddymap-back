@@ -8,11 +8,13 @@ import java.util.Date;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -25,6 +27,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.buddymap.config.AuthenticationNeeded;
 import com.buddymap.dao.AuthenticationDAO;
 import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
@@ -42,6 +45,7 @@ public class UserResource {
 	
 	@GET
 	@Path("/{idUser : [0-9a-z]+}")
+	@AuthenticationNeeded
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUser(@PathParam("idUser") String idUser) throws JsonParseException, JsonMappingException, IOException{
 		User user = userDAO.find(idUser);
@@ -68,7 +72,36 @@ public class UserResource {
 		}
 	}
 	
+	@HEAD
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUserByCriteria(@QueryParam(value="mail") String mail){
+		if(mail == null || !mail.matches("^[A-Za-z0-9\\._-]+@[A-Za-z0-9\\.-_]+.[a-zA-Z]{2,4}$")){
+			return Response.status(400).entity("Wrong format : Mail").build();
+		}
+		User user = userDAO.findByMail(mail);
+		if(user == null){
+			return Response.status(404).entity("User not found").build();
+		}else{
+			ObjectMapper mapper = new ObjectMapper();
+			String fluxJson;
+			try {
+				fluxJson = mapper.writeValueAsString(user);
+				return Response.ok(fluxJson).build();
+			} catch (JsonGenerationException e) {
+				logger.error("Error while parsing json", e);
+				return Response.status(500).build();
+			} catch (JsonMappingException e) {
+				logger.error("Error while parsing json", e);
+				return Response.status(500).build();
+			} catch (IOException e) {
+				logger.error("Error while parsing json", e);
+				return Response.status(500).build();
+			}
+		}
+	}
+	
 	@POST
+	@AuthenticationNeeded
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addUser(User user, @Context UriInfo uriInfo) throws URISyntaxException {
@@ -102,6 +135,7 @@ public class UserResource {
 	}
 	
 	@DELETE
+	@AuthenticationNeeded
 	@Path("/{idUser:[0-9a-z]+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -122,6 +156,7 @@ public class UserResource {
 	}
 	
 	@PUT
+	@AuthenticationNeeded
 	@Path("/{idUser:[0-9a-z]+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateUser(@PathParam(value="idUser")String idUser, User user){

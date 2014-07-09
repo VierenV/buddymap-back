@@ -13,33 +13,19 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.buddymap.config.AuthenticationNeeded;
 import com.buddymap.dao.AuthenticationDAO;
 import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
 import com.buddymap.model.User;
 import com.buddymap.services.CryptographyService;
 
- 
+@AuthenticationNeeded
 public class RequestFilter implements ContainerRequestFilter {
 	private static final long TOKEN_VALIDITY = 600000;
 	private static Logger logger = Logger.getRootLogger();
 
 	public void filter(ContainerRequestContext request) {
-		String path = request.getUriInfo().getAbsolutePath().getPath();
-		//If the nav comes with f****** OPTIONS
-		if("OPTIONS".equals(request.getMethod())){
-			return;
-		}
-		//Cases where we don't need authentication
-		//If we want to create an user
-		if("/users".equals(path) && "POST".equals(request.getMethod())){
-			return;
-		}
-		//If we want to login
-		if(path != null && path.startsWith("/authentication/") && "PUT".equals(request.getMethod())){
-			return;
-		}
-		
 		String authorizationHeader = request.getHeaderString("Authorization");
 		if(authorizationHeader != null){
 			ObjectMapper mapper = new ObjectMapper();
@@ -55,6 +41,7 @@ public class RequestFilter implements ContainerRequestFilter {
 				                    .status(Response.Status.UNAUTHORIZED)
 				                    .entity("User cannot access the resource.")
 				                    .build());
+						return;
 					}
 					if(CryptographyService.checkSignature(authent, storedAuthent)){
 						Authentication newAuthent = new Authentication();
@@ -83,6 +70,7 @@ public class RequestFilter implements ContainerRequestFilter {
 					                    .status(Response.Status.UNAUTHORIZED)
 					                    .entity("User cannot access the resource.")
 					                    .build());
+								return;
 							}else{
 								request.setProperty("connectedUser", user);
 							}
@@ -91,6 +79,7 @@ public class RequestFilter implements ContainerRequestFilter {
 							request.abortWith(Response
 				                    .status(Response.Status.INTERNAL_SERVER_ERROR)
 				                    .build());
+							return;
 						}
 					}else{
 						logger.error("Unacceptable signature "+authent.getMail()+":"+authent.getHashSignature());
@@ -98,12 +87,14 @@ public class RequestFilter implements ContainerRequestFilter {
 			                    .status(Response.Status.UNAUTHORIZED)
 			                    .entity("User cannot access the resource.")
 			                    .build());
+						return;
 					}
 				}else{
 					request.abortWith(Response
 		                    .status(Response.Status.UNAUTHORIZED)
 		                    .entity("User cannot access the resource.")
 		                    .build());
+					return;
 				}
 			} catch (JsonParseException e) {
 				logger.error(e);
@@ -111,24 +102,28 @@ public class RequestFilter implements ContainerRequestFilter {
 	                    .status(Response.Status.UNAUTHORIZED)
 	                    .entity("User cannot access the resource.")
 	                    .build());
+				return;
 			} catch (JsonMappingException e) {
 				logger.error(e);
 				request.abortWith(Response
 	                    .status(Response.Status.UNAUTHORIZED)
 	                    .entity("User cannot access the resource.")
 	                    .build());
+				return;
 			} catch (IOException e) {
 				logger.error(e);
 				request.abortWith(Response
 	                    .status(Response.Status.UNAUTHORIZED)
 	                    .entity("User cannot access the resource.")
 	                    .build());
+				return;
 			} catch (SignatureException e) {
 				logger.error(e);
 				request.abortWith(Response
 	                    .status(Response.Status.UNAUTHORIZED)
 	                    .entity("User cannot access the resource.")
 	                    .build());
+				return;
 			}
 			
 		}else{
@@ -136,6 +131,7 @@ public class RequestFilter implements ContainerRequestFilter {
                     .status(Response.Status.UNAUTHORIZED)
                     .entity("User cannot access the resource.")
                     .build());
+			return;
 		}
 	}
  
