@@ -24,12 +24,12 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.buddymap.config.AuthenticationNeeded;
+import com.buddymap.config.AuthenticationRequired;
 import com.buddymap.dao.EventDAO;
 import com.buddymap.model.Event;
 import com.buddymap.model.User;
 
-@AuthenticationNeeded
+@AuthenticationRequired
 @Path("/events")
 public class EventResource {
 	

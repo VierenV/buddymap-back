@@ -27,7 +27,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.buddymap.config.AuthenticationNeeded;
+import com.buddymap.config.AuthenticationRequired;
 import com.buddymap.dao.AuthenticationDAO;
 import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
@@ -45,7 +45,7 @@ public class UserResource {
 	
 	@GET
 	@Path("/{idUser : [0-9a-z]+}")
-	@AuthenticationNeeded
+	@AuthenticationRequired
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUser(@PathParam("idUser") String idUser) throws JsonParseException, JsonMappingException, IOException{
 		User user = userDAO.find(idUser);
@@ -101,7 +101,7 @@ public class UserResource {
 	}
 	
 	@POST
-	@AuthenticationNeeded
+	@AuthenticationRequired
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addUser(User user, @Context UriInfo uriInfo) throws URISyntaxException {
@@ -135,7 +135,7 @@ public class UserResource {
 	}
 	
 	@DELETE
-	@AuthenticationNeeded
+	@AuthenticationRequired
 	@Path("/{idUser:[0-9a-z]+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -156,7 +156,7 @@ public class UserResource {
 	}
 	
 	@PUT
-	@AuthenticationNeeded
+	@AuthenticationRequired
 	@Path("/{idUser:[0-9a-z]+}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateUser(@PathParam(value="idUser")String idUser, User user){

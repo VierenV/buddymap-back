@@ -13,14 +13,14 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.buddymap.config.AuthenticationNeeded;
+import com.buddymap.config.AuthenticationRequired;
 import com.buddymap.dao.AuthenticationDAO;
 import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
 import com.buddymap.model.User;
 import com.buddymap.services.CryptographyService;
 
-@AuthenticationNeeded
+@AuthenticationRequired
 public class RequestFilter implements ContainerRequestFilter {
 	private static final long TOKEN_VALIDITY = 600000;
 	private static Logger logger = Logger.getRootLogger();

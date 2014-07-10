@@ -13,7 +13,7 @@ public class BuddyMap extends ResourceConfig {
 	    public BuddyMap() {
 	        // Register resources and providers using package-scanning.
 	        packages("com.buddymap.resources");
-	        register(AuthenticationNeeded.class);
+	        register(AuthenticationRequired.class);
 	        register(RequestFilter.class);
 	        register(ResponseFilter.class);
 	    }
