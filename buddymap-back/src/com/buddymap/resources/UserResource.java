@@ -3,7 +3,9 @@ package com.buddymap.resources;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -22,15 +24,15 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import com.buddymap.config.AuthenticationRequired;
 import com.buddymap.dao.AuthenticationDAO;
+import com.buddymap.dao.EventDAO;
 import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
+import com.buddymap.model.Event;
 import com.buddymap.model.User;
 
 
@@ -42,6 +44,7 @@ public class UserResource {
 	private UserDAO userDAO = new UserDAO();
 	private AuthenticationDAO authentDAO = new AuthenticationDAO();
 	private static Logger logger = Logger.getRootLogger();
+	private EventDAO eventDAO = new EventDAO();
 	
 	@GET
 	@Path("/{idUser : [0-9a-z]+}")
@@ -49,26 +52,12 @@ public class UserResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUser(@PathParam("idUser") String idUser) throws JsonParseException, JsonMappingException, IOException{
 		User user = userDAO.find(idUser);
-		ObjectMapper mapper = new ObjectMapper();
 		if(user == null){
 			return Response.status(404).build();
 		}else if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
 			return Response.status(401).build();
 		}else{
-			String fluxJson;
-			try {
-				fluxJson = mapper.writeValueAsString(user);
-				return Response.ok(fluxJson).build();
-			} catch (JsonGenerationException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			} catch (JsonMappingException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			} catch (IOException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			}
+			return Response.ok(user).build();
 		}
 	}
 	
@@ -163,24 +152,33 @@ public class UserResource {
 			user.setId(idUser);
 			int nb = userDAO.update(user);
 			if (nb == 1) {
-				ObjectMapper mapper = new ObjectMapper();
-				String fluxJson;
-				try {
-					fluxJson = mapper.writeValueAsString(user);
-					return Response.ok(fluxJson).build();
-				} catch (JsonGenerationException e) {
-					logger.error("Error while parsing json", e);
-					return Response.status(500).build();
-				} catch (JsonMappingException e) {
-					logger.error("Error while parsing json", e);
-					return Response.status(500).build();
-				} catch (IOException e) {
-					logger.error("Error while parsing json", e);
-					return Response.status(500).build();
-				}
+				return Response.ok(user).build();
 			} else{
 				return Response.status(404).build();
 			} 
+		}
+	}
+	
+	@GET
+	@AuthenticationRequired
+	@Path("/{mail}/events")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getEventsByUser(@PathParam("mail") String mail){
+		if(!mail.matches("^[A-Za-z0-9\\._-]+@[A-Za-z0-9\\.-_]+.[a-zA-Z]{2,4}$")){
+			return Response.status(400).entity("Wrong format : Mail").build();
+		}
+		User user = userDAO.findByMail(mail);
+		if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
+			return Response.status(401).build();
+		}
+		List<Event> eventList = new ArrayList<Event>();
+		for(Event event : user.getEventList()){
+			eventList.add(eventDAO.find(event.getIdEvent()));
+		}
+		if(eventList.isEmpty()){
+			return Response.status(404).build();
+		}else{
+			return Response.ok(eventList).build();
 		}
 	}
 }

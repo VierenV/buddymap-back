@@ -78,7 +78,7 @@ public class CryptographyService {
 			mac.init(signingKey);
 			// compute the hmac on input data bytes
 			byte[] rawHmac = mac.doFinal(data.getBytes());
-			result = DatatypeConverter.printHexBinary(rawHmac);
+			result = DatatypeConverter.printBase64Binary(rawHmac);
 
 		} catch (NoSuchAlgorithmException e) {
 			logger.error("Unable to find algorithm", e);

@@ -1,9 +1,7 @@
 package com.buddymap.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -24,7 +22,7 @@ public class User {
 	private double currentLatitude;
 	private double currentLongitude;
 	private String lastRefresh;
-	private Map<Long, String> eventMap = new HashMap<Long, String>();
+	private List<Event> eventList = new ArrayList<Event>();
 	private List<String> friendsList = new ArrayList<String>();
 	
 	public String getId() {
@@ -87,11 +85,11 @@ public class User {
 	public void setLastRefresh(String lastRefresh) {
 		this.lastRefresh = lastRefresh;
 	}
-	public Map<Long, String> getEventMap() {
-		return eventMap;
+	public List<Event> getEventList() {
+		return eventList;
 	}
-	public void setEventMap(Map<Long, String> eventMap) {
-		this.eventMap = eventMap;
+	public void setEventList(List<Event> eventList) {
+		this.eventList = eventList;
 	}
 	public List<String> getFriendsList() {
 		return friendsList;
