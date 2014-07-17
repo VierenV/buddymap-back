@@ -82,26 +82,11 @@ public class UserResource {
 		if(user == null){
 			return Response.status(404).entity("User not found").build();
 		}else{
-			ObjectMapper mapper = new ObjectMapper();
-			String fluxJson;
-			try {
-				fluxJson = mapper.writeValueAsString(user);
-				return Response.ok(fluxJson).build();
-			} catch (JsonGenerationException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			} catch (JsonMappingException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			} catch (IOException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			}
+			return Response.ok().build();
 		}
 	}
 	
 	@POST
-	@AuthenticationRequired
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addUser(User user, @Context UriInfo uriInfo) throws URISyntaxException {

@@ -14,7 +14,7 @@ public class ResponseFilter implements ContainerResponseFilter {
 		}
 		response.getHeaders().add("Access-Control-Allow-Origin", "*");
 		response.getHeaders().add("Access-Control-Allow-Referer", "*");
-		response.getHeaders().add("Access-Control-Allow-Headers", "accept, origin, referer, content-type");
+		response.getHeaders().add("Access-Control-Allow-Headers", "accept, origin, referer, content-type, authorization");
 		response.getHeaders().add("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, DELETE");
 		response.getHeaders().add("Access-Control-Expose-Headers", "Location");
 	}
