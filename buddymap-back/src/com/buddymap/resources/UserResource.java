@@ -3,9 +3,7 @@ package com.buddymap.resources;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -29,10 +27,8 @@ import org.codehaus.jackson.map.JsonMappingException;
 
 import com.buddymap.config.AuthenticationRequired;
 import com.buddymap.dao.AuthenticationDAO;
-import com.buddymap.dao.EventDAO;
 import com.buddymap.dao.UserDAO;
 import com.buddymap.model.Authentication;
-import com.buddymap.model.Event;
 import com.buddymap.model.User;
 
 
@@ -44,7 +40,6 @@ public class UserResource {
 	private UserDAO userDAO = new UserDAO();
 	private AuthenticationDAO authentDAO = new AuthenticationDAO();
 	private static Logger logger = Logger.getRootLogger();
-	private EventDAO eventDAO = new EventDAO();
 	
 	@GET
 	@Path("/{idUser : [0-9a-z]+}")
@@ -61,9 +56,25 @@ public class UserResource {
 		}
 	}
 	
-	@HEAD
+	@GET
+	@AuthenticationRequired
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getUserByCriteria(@QueryParam(value="mail") String mail){
+		if(mail == null || !mail.matches("^[A-Za-z0-9\\._-]+@[A-Za-z0-9\\.-_]+.[a-zA-Z]{2,4}$")){
+			return Response.status(400).entity("Wrong format : Mail").build();
+		}
+		User user = userDAO.findByMail(mail);
+		if(user == null){
+			return Response.status(404).entity("User not found").build();
+		}else{
+			user.setPassword(null);
+			return Response.ok(user).build();
+		}
+	}
+	
+	@HEAD
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response headUserByCriteria(@QueryParam(value="mail") String mail){
 		if(mail == null || !mail.matches("^[A-Za-z0-9\\._-]+@[A-Za-z0-9\\.-_]+.[a-zA-Z]{2,4}$")){
 			return Response.status(400).entity("Wrong format : Mail").build();
 		}
@@ -156,29 +167,6 @@ public class UserResource {
 			} else{
 				return Response.status(404).build();
 			} 
-		}
-	}
-	
-	@GET
-	@AuthenticationRequired
-	@Path("/{mail}/events")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response getEventsByUser(@PathParam("mail") String mail){
-		if(!mail.matches("^[A-Za-z0-9\\._-]+@[A-Za-z0-9\\.-_]+.[a-zA-Z]{2,4}$")){
-			return Response.status(400).entity("Wrong format : Mail").build();
-		}
-		User user = userDAO.findByMail(mail);
-		if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
-			return Response.status(401).build();
-		}
-		List<Event> eventList = new ArrayList<Event>();
-		for(Event event : user.getEventList()){
-			eventList.add(eventDAO.find(event.getIdEvent()));
-		}
-		if(eventList.isEmpty()){
-			return Response.status(404).build();
-		}else{
-			return Response.ok(eventList).build();
 		}
 	}
 }

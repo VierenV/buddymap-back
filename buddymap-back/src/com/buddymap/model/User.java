@@ -10,8 +10,8 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class User {
-    @JsonProperty("_id")
+public class User{
+	@JsonProperty("_id")
 	private String id;
 	private String pseudo;
 	private String mail;
@@ -22,7 +22,6 @@ public class User {
 	private double currentLatitude;
 	private double currentLongitude;
 	private String lastRefresh;
-	private List<Event> eventList = new ArrayList<Event>();
 	private List<String> friendsList = new ArrayList<String>();
 	
 	public String getId() {
@@ -85,17 +84,27 @@ public class User {
 	public void setLastRefresh(String lastRefresh) {
 		this.lastRefresh = lastRefresh;
 	}
-	public List<Event> getEventList() {
-		return eventList;
-	}
-	public void setEventList(List<Event> eventList) {
-		this.eventList = eventList;
-	}
 	public List<String> getFriendsList() {
 		return friendsList;
 	}
 	public void setFriendsList(List<String> friendsList) {
 		this.friendsList = friendsList;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if(getClass() != obj.getClass()){
+			return false;
+		}
+		User other = (User) obj;
+		if(this.id.equals(other.getId())){
+			return true;
+		}
+		return false;
 	}
 	
 	

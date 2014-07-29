@@ -1,12 +1,17 @@
 package com.buddymap.dao;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.types.ObjectId;
 
 import com.buddymap.connection.DBConnection;
 import com.buddymap.model.Event;
+import com.buddymap.model.User;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 
@@ -36,7 +41,7 @@ public class EventDAO extends AbstractDAO<Event> {
 		newDocument.put("longitude", event.getLongitude());
 		newDocument.put("idUser", event.getIdUser());
 		newDocument.put("eventType", event.getEventType());
-		newDocument.put("guests", event.getGuestMap());
+		newDocument.put("guests", event.getGuestList());
 		newDocument.put("date", event.getDate());
 		
 		BasicDBObject searchQuery = new BasicDBObject().append("_id", new ObjectId(event.getIdEvent()));
@@ -53,7 +58,11 @@ public class EventDAO extends AbstractDAO<Event> {
 		newDocument.put("longitude", event.getLongitude());
 		newDocument.put("idUser", event.getIdUser());
 		newDocument.put("eventType", event.getEventType());
-		newDocument.put("guests", event.getGuestMap());
+		BasicDBList guestList = new BasicDBList();
+		for(User user : event.getGuestList()){
+			guestList.add(new BasicDBObject("id", user.getId()).append("pseudo", user.getPseudo()).append("mail", user.getMail()));
+		}
+		newDocument.put("guests", guestList);
 		newDocument.put("date", event.getDate());
 		
 		WriteResult res = this.getCollec().insert(newDocument);
@@ -76,12 +85,45 @@ public class EventDAO extends AbstractDAO<Event> {
 			event.setLatitude((Double) res.get("latitude"));
 			event.setLongitude((Double) res.get("longitude"));
 			event.setTitle(res.get("title") != null ? res.get("title").toString() : null);
-			event.setGuestMap(res.get("guestMap") != null ? (Map<String, String>) res.get("guestMap") : null);
+			BasicDBList guests = (BasicDBList) res.get("guests");
+			List<User> listeGuests = new ArrayList<User>();
+			for(Object guest : guests){
+				User user = new User();
+				user.setId(((DBObject) guest).get("id") != null ? ((DBObject) guest).get("id").toString() : null);
+				user.setPseudo(((DBObject) guest).get("pseudo") != null ? ((DBObject) guest).get("pseudo").toString() : null);
+				user.setMail(((DBObject) guest).get("mail") != null ? ((DBObject) guest).get("mail").toString() : null);
+				
+				listeGuests.add(user);
+			}
+			event.setGuestList(listeGuests);
 			
 			return event;
 		}else{
 			return null;
 		}
+	}
+
+	public List<Event> findByUser(String idUser) {
+		BasicDBObject exist = new BasicDBObject("$exists", true);
+		BasicDBObject searchQuery = new BasicDBObject().append("guests."+idUser, exist);
+		DBCursor cursor = this.getCollec().find(searchQuery);
+		List<Event> eventList = new ArrayList<Event>();
+		while(cursor.hasNext()){
+			DBObject res = cursor.next();
+			Event event = new Event();
+			event.setIdEvent(res.get("_id").toString());
+			event.setDate(res.get("date") != null ? res.get("date").toString() : null);
+			event.setDetails(res.get("details") != null ? res.get("details").toString() : null);
+			event.setEventType(res.get("eventType") != null ? res.get("eventType").toString() : null);
+			event.setIdUser(res.get("idUser") != null ? res.get("idUser").toString() : null);
+			event.setLatitude((Double) res.get("latitude"));
+			event.setLongitude((Double) res.get("longitude"));
+			event.setTitle(res.get("title") != null ? res.get("title").toString() : null);
+			event.setGuestList(res.get("guests") != null ? (List<User>) res.get("guests") : null);
+			
+			eventList.add(event);
+		}
+		return eventList;
 	}
 
 }

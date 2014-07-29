@@ -1,7 +1,7 @@
 package com.buddymap.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -20,7 +20,7 @@ public class Event {
 	private double latitude;
 	private double longitude;
 	private String idUser;
-	private Map<String, String> guestMap = new HashMap<String, String>();
+	private List<User> guestList = new ArrayList<User>();
 		
 	public String getTitle() {
 		return title;
@@ -82,10 +82,10 @@ public class Event {
 	public void setIdUser(String idUser) {
 		this.idUser = idUser;
 	}
-	public Map<String, String> getGuestMap() {
-		return guestMap;
+	public List<User> getGuestList() {
+		return guestList;
 	}
-	public void setGuestMap(Map<String, String> guestMap) {
-		this.guestMap = guestMap;
+	public void setGuestList(List<User> guestList) {
+		this.guestList = guestList;
 	}
 }

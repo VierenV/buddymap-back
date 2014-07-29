@@ -3,6 +3,7 @@ package com.buddymap.resources;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,6 +13,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -19,10 +21,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import com.buddymap.config.AuthenticationRequired;
 import com.buddymap.dao.EventDAO;
@@ -44,27 +44,29 @@ public class EventResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getEvent(@PathParam("idEvent") String idEvent) throws JsonParseException, JsonMappingException, IOException{
 		Event event = eventDAO.find(idEvent);
-		ObjectMapper mapper = new ObjectMapper();
 		if(event == null){
 			return Response.status(404).build();
-		}else if(event.getGuestMap().get(((User)request.getProperty("connectedUser")).getMail()) == null){
+		}else if(!(event.getGuestList()).contains((User)request.getProperty("connectedUser")) && !event.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
 			return Response.status(401).build();
 		}else{
-			String fluxJson;
-			try {
-				fluxJson = mapper.writeValueAsString(event);
-				return Response.ok(fluxJson).build();
-			} catch (JsonGenerationException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			} catch (JsonMappingException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			} catch (IOException e) {
-				logger.error("Error while parsing json", e);
-				return Response.status(500).build();
-			}
+			return Response.ok(event).build();
 		}
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getEventsByCriteria(@QueryParam(value="idUser") String idUser){
+		if(idUser == null || !idUser.matches("[0-9a-z]+")){
+			return Response.status(400).entity("Wrong format : idUser").build();
+		}
+		//if(!idUser.equals(((User)request.getProperty("connectedUser")).getId())){
+			//return Response.status(401).build();
+		//}
+		List<Event> eventList = eventDAO.findByUser(idUser);
+		if(eventList.isEmpty()){
+			return Response.status(404).build();
+		}
+		return Response.ok(eventList).build();
 	}
 	
 	@POST
@@ -74,16 +76,16 @@ public class EventResource {
 		if (event == null) {
 			return Response.status(400).entity("Syntax error : Event").build();
 		}else{
-			if(!event.getTitle().matches("[a-zA-Z 0-9-<>\\.]+")){
+			if(event.getTitle() == null || !event.getTitle().matches("[a-zA-Z 0-9-<>\\.]+")){
 				return Response.status(400).entity("Wrong format : Title").build();
 			}
-			if(!event.getEventType().matches("[a-zA-Z]+")){
+			if(event.getEventType() == null || !event.getEventType().matches("[a-zA-Z]+")){
 				return Response.status(400).entity("Wrong format : Event type").build();
 			}
-			if(!event.getDetails().matches("[a-zA-Z 0-9-éàèêëîïôö\\.!]+")){
+			if(event.getDetails() == null || !event.getDetails().matches("[a-zA-Z \\'0-9-éàèêëîïôö#\\.!]+")){
 				return Response.status(400).entity("Wrong format : details").build();
 			}
-			if(!event.getDate().matches("^[0-9]{4}[/-]((0[1-9])|(1[0-2]))[/-][0-3][0-9]$")){
+			if(event.getDate() == null || !event.getDate().matches("^[0-9]{4}[/-]((0[1-9])|(1[0-2]))[/-][0-3][0-9]$")){
 				return Response.status(400).entity("Wrong format : Date (YYYY/MM/DD)").build();
 			}
 			String nbRes = eventDAO.create(event);
@@ -145,21 +147,7 @@ public class EventResource {
 			event.setIdEvent(idEvent);
 			int nb = eventDAO.update(event);
 			if (nb == 1) {
-				ObjectMapper mapper = new ObjectMapper();
-				String fluxJson;
-				try {
-					fluxJson = mapper.writeValueAsString(event);
-					return Response.ok(fluxJson).build();
-				} catch (JsonGenerationException e) {
-					logger.error("Error while parsing json", e);
-					return Response.status(500).build();
-				} catch (JsonMappingException e) {
-					logger.error("Error while parsing json", e);
-					return Response.status(500).build();
-				} catch (IOException e) {
-					logger.error("Error while parsing json", e);
-					return Response.status(500).build();
-				}
+				return Response.ok(event).build();
 			} else{
 				return Response.status(404).build();
 			} 
