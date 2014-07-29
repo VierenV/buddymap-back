@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 public class PropertiesLoader {
 	private static volatile PropertiesLoader propertiesLoader;
-	private static final String fileName = "pathworld_local.properties";
+	private static final String fileName = "buddymap.properties";
 	private Properties prop;
 	private Logger logger = Logger.getRootLogger();
 	private String salt;
