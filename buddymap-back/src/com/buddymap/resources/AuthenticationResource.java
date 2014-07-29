@@ -1,6 +1,7 @@
 package com.buddymap.resources;
 
 import java.net.URISyntaxException;
+import java.security.SignatureException;
 import java.util.Date;
 
 import javax.ws.rs.Consumes;
@@ -56,14 +57,19 @@ public class AuthenticationResource {
 			if(storedAuthent.getClientTimestamp()>authent.getClientTimestamp()){
 				return Response.status(400).entity("Wrong value : ClientTimestamp").build();
 			}
-			String token = CryptographyService.generateCryptedToken(authent.getMail());
-			authent.setEncryptedToken(token);
-			authent.setServerTimestamp((new Date()).getTime());
-			int nbRes = authentDAO.update(authent);
-			if(nbRes == 0){
+			try{
+
+				String token = CryptographyService.generateCryptedToken(authent.getMail());
+				authent.setEncryptedToken(token);
+				authent.setServerTimestamp((new Date()).getTime());
+				int nbRes = authentDAO.update(authent);
+				if(nbRes == 0){
+					return Response.status(400).entity("Unable to update authentication").build();
+				}else{
+					return Response.ok(token).build();
+				}
+			}catch(SignatureException e){
 				return Response.status(400).entity("Unable to update authentication").build();
-			}else{
-				return Response.ok(token).build();
 			}
 		}
 	}

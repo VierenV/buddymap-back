@@ -62,10 +62,9 @@ public class CryptographyService {
 		return false;
 	}
 
-	public static String generateCryptedToken(String login) {
+	public static String generateCryptedToken(String login) throws SignatureException {
 		Long serverTimestamp = new Date().getTime();
-		//TODO : Check l'impact que peut avoir le fait d'avoir deux timestamp server différents
-		return encryptWithAES(login+serverTimestamp);
+		return generateHMACSHA256(login+serverTimestamp, PropertiesLoader.getInstance().getAESKey());
 	}
 
 	public static String generateHMACSHA256(String data, String key) throws SignatureException{
