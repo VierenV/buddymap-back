@@ -104,9 +104,10 @@ public class EventDAO extends AbstractDAO<Event> {
 	}
 
 	public List<Event> findByUser(String idUser) {
-		BasicDBObject exist = new BasicDBObject("$exists", true);
-		BasicDBObject searchQuery = new BasicDBObject().append("guests."+idUser, exist);
-		DBCursor cursor = this.getCollec().find(searchQuery);
+		BasicDBObject searchQuery = new BasicDBObject().append("id", idUser);
+		BasicDBObject elemMatch = new BasicDBObject("$elemMatch", searchQuery);
+		BasicDBObject globalQuery = new BasicDBObject().append("guests", elemMatch);
+		DBCursor cursor = this.getCollec().find(globalQuery);
 		List<Event> eventList = new ArrayList<Event>();
 		while(cursor.hasNext()){
 			DBObject res = cursor.next();
@@ -119,7 +120,17 @@ public class EventDAO extends AbstractDAO<Event> {
 			event.setLatitude((Double) res.get("latitude"));
 			event.setLongitude((Double) res.get("longitude"));
 			event.setTitle(res.get("title") != null ? res.get("title").toString() : null);
-			event.setGuestList(res.get("guests") != null ? (List<User>) res.get("guests") : null);
+			BasicDBList guests = (BasicDBList) res.get("guests");
+			List<User> listeGuests = new ArrayList<User>();
+			for(Object guest : guests){
+				User user = new User();
+				user.setId(((DBObject) guest).get("id") != null ? ((DBObject) guest).get("id").toString() : null);
+				user.setPseudo(((DBObject) guest).get("pseudo") != null ? ((DBObject) guest).get("pseudo").toString() : null);
+				user.setMail(((DBObject) guest).get("mail") != null ? ((DBObject) guest).get("mail").toString() : null);
+				
+				listeGuests.add(user);
+			}
+			event.setGuestList(listeGuests);
 			
 			eventList.add(event);
 		}
