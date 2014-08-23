@@ -49,9 +49,11 @@ public class UserResource {
 		User user = userDAO.find(idUser);
 		if(user == null){
 			return Response.status(404).build();
-		}else if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
-			return Response.status(401).build();
-		}else{
+		}
+		//else if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
+			//return Response.status(401).build();
+		//}
+		else{
 			return Response.ok(user).build();
 		}
 	}
@@ -129,9 +131,9 @@ public class UserResource {
 		if(user == null){
 			return Response.status(404).entity("Unable to delete user").build();
 		}
-		if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
-			return Response.status(401).build();
-		}
+		//if(!user.getId().equals(((User)request.getProperty("connectedUser")).getId())){
+			//return Response.status(401).build();
+		//}
 		int nbRes = userDAO.delete(idUser);
 		if(nbRes < 1){
 			return Response.status(404).entity("Unable to delete user").build();
@@ -148,9 +150,10 @@ public class UserResource {
 		if (user == null) {
 			return Response.status(400)
 					.entity("Syntax error : user").build();
-		} else if(!idUser.equals(((User)request.getProperty("connectedUser")).getId())){
-			return Response.status(401).build();
-		}else {
+		}// else if(!idUser.equals(((User)request.getProperty("connectedUser")).getId())){
+			//return Response.status(401).build();
+		//}
+		else {
 			if(!user.getMail().matches("^[A-Za-z0-9\\._-]+@[A-Za-z0-9\\.-_]+.[a-zA-Z]{2,4}$")){
 				return Response.status(400).entity("Wrong format : Mail").build();
 			}

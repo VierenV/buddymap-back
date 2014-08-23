@@ -20,7 +20,7 @@ import com.buddymap.model.Authentication;
 import com.buddymap.model.User;
 import com.buddymap.services.CryptographyService;
 
-@AuthenticationRequired
+//@AuthenticationRequired
 public class RequestFilter implements ContainerRequestFilter {
 	private static final long TOKEN_VALIDITY = 600000;
 	private static Logger logger = Logger.getRootLogger();

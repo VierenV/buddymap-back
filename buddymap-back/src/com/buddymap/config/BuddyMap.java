@@ -14,7 +14,7 @@ public class BuddyMap extends ResourceConfig {
 	        // Register resources and providers using package-scanning.
 	        packages("com.buddymap.resources");
 	        register(AuthenticationRequired.class);
-	        register(RequestFilter.class);
+	        //register(RequestFilter.class);
 	        register(ResponseFilter.class);
 	    }
 }

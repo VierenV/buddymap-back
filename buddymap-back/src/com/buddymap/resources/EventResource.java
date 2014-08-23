@@ -46,9 +46,11 @@ public class EventResource {
 		Event event = eventDAO.find(idEvent);
 		if(event == null){
 			return Response.status(404).build();
-		}else if(!(event.getGuestList()).contains((User)request.getProperty("connectedUser")) && !event.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
-			return Response.status(401).build();
-		}else{
+		}
+		//else if(!(event.getGuestList()).contains((User)request.getProperty("connectedUser")) && !event.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
+			//return Response.status(401).build();
+		//}
+		else{
 			return Response.ok(event).build();
 		}
 	}
@@ -106,9 +108,9 @@ public class EventResource {
 		if(event == null){
 			return Response.status(404).entity("Unable to delete event").build();
 		}
-		if(!event.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
-			return Response.status(401).build();
-		}
+		//if(!event.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
+			//return Response.status(401).build();
+		//}
 		int nbRes = eventDAO.delete(idEvent);
 		if(nbRes < 1){
 			return Response.status(404).entity("Unable to delete event").build();
