@@ -21,6 +21,7 @@ public class Event {
 	private double longitude;
 	private String idUser;
 	private String authorPseudo;
+	private String authorImageId;
 	private List<User> guestList = new ArrayList<User>();
 		
 	public String getTitle() {
@@ -88,6 +89,12 @@ public class Event {
 	}
 	public void setGuestList(List<User> guestList) {
 		this.guestList = guestList;
+	}
+	public String getAuthorImageId() {
+		return authorImageId;
+	}
+	public void setAuthorImageId(String authorImageId) {
+		this.authorImageId = authorImageId;
 	}
 	public String getAuthorPseudo() {
 		return authorPseudo;

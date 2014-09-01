@@ -43,6 +43,8 @@ public class EventDAO extends AbstractDAO<Event> {
 		newDocument.put("eventType", event.getEventType());
 		newDocument.put("guests", event.getGuestList());
 		newDocument.put("date", event.getDate());
+		newDocument.put("authorImageId", event.getAuthorImageId());
+		
 		
 		BasicDBObject searchQuery = new BasicDBObject().append("_id", new ObjectId(event.getIdEvent()));
 		WriteResult res = this.getCollec().update(searchQuery, newDocument);
@@ -58,6 +60,7 @@ public class EventDAO extends AbstractDAO<Event> {
 		newDocument.put("longitude", event.getLongitude());
 		newDocument.put("idUser", event.getIdUser());
 		newDocument.put("authorPseudo", event.getAuthorPseudo());
+		newDocument.put("authorImageId", event.getAuthorImageId());
 		newDocument.put("eventType", event.getEventType());
 		BasicDBList guestList = new BasicDBList();
 		for(User user : event.getGuestList()){
@@ -84,6 +87,7 @@ public class EventDAO extends AbstractDAO<Event> {
 			event.setEventType(res.get("eventType") != null ? res.get("eventType").toString() : null);
 			event.setIdUser(res.get("idUser") != null ? res.get("idUser").toString() : null);
 			event.setAuthorPseudo(res.get("authorPseudo") != null ? res.get("authorPseudo").toString() : null);
+			event.setAuthorImageId(res.get("authorImageId") != null ? res.get("authorImageId").toString() : null);
 			event.setLatitude((Double) res.get("latitude"));
 			event.setLongitude((Double) res.get("longitude"));
 			event.setTitle(res.get("title") != null ? res.get("title").toString() : null);
@@ -120,6 +124,7 @@ public class EventDAO extends AbstractDAO<Event> {
 			event.setEventType(res.get("eventType") != null ? res.get("eventType").toString() : null);
 			event.setIdUser(res.get("idUser") != null ? res.get("idUser").toString() : null);
 			event.setAuthorPseudo(res.get("authorPseudo") != null ? res.get("authorPseudo").toString() : null);
+			event.setAuthorImageId(res.get("authorImageId") != null ? res.get("authorImageId").toString() : null);
 			event.setLatitude((Double) res.get("latitude"));
 			event.setLongitude((Double) res.get("longitude"));
 			event.setTitle(res.get("title") != null ? res.get("title").toString() : null);

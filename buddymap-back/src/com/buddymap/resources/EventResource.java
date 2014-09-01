@@ -77,7 +77,11 @@ public class EventResource {
 	public Response addEvent(Event event, @Context UriInfo uriInfo) throws URISyntaxException {
 		if (event == null) {
 			return Response.status(400).entity("Syntax error : Event").build();
-		}else{
+		}
+		//if(!event.getIdUser().equals(((User)request.getProperty("connectedUser")).getId())){
+		//return Response.status(401).build();
+		//}
+		else{
 			if(event.getTitle() == null || !event.getTitle().matches("[a-zA-Z 0-9-<>\\.]+")){
 				return Response.status(400).entity("Wrong format : Title").build();
 			}

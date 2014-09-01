@@ -22,6 +22,7 @@ public class User{
 	private double currentLatitude;
 	private double currentLongitude;
 	private String lastRefresh;
+	private String idImage;
 	private List<String> friendsList = new ArrayList<String>();
 	
 	public String getId() {
@@ -83,6 +84,12 @@ public class User{
 	}
 	public void setLastRefresh(String lastRefresh) {
 		this.lastRefresh = lastRefresh;
+	}
+	public String getIdImage() {
+		return idImage;
+	}
+	public void setIdImage(String idImage) {
+		this.idImage = idImage;
 	}
 	public List<String> getFriendsList() {
 		return friendsList;

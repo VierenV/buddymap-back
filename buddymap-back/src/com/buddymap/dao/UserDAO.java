@@ -35,6 +35,7 @@ public class UserDAO extends AbstractDAO<User>{
 		newDocument.put("pseudo", user.getPseudo());
 		newDocument.put("currentLatitude", user.getCurrentLatitude());
 		newDocument.put("currentLongitude", user.getCurrentLongitude());
+		newDocument.put("idImage", user.getIdImage());
 		newDocument.put("friendsList", user.getFriendsList());
 		newDocument.put("houseLatitude", user.getHouseLatitude());
 		newDocument.put("houseLongitude", user.getHouseLongitude());
@@ -57,6 +58,7 @@ public class UserDAO extends AbstractDAO<User>{
 		newDocument.put("houseLatitude", user.getHouseLatitude());
 		newDocument.put("houseLongitude", user.getHouseLongitude());
 		newDocument.put("lastRefresh", user.getLastRefresh());
+		newDocument.put("idImage", user.getIdImage());
 		newDocument.put("pwd", CryptographyService.hashSaltedSHA512(user.getPassword()+user.getMail()));
 		
 		BasicDBObject query = new BasicDBObject();
@@ -85,6 +87,7 @@ public class UserDAO extends AbstractDAO<User>{
 			user.setCurrentLongitude((Double) res.get("currentLongitude"));
 			user.setHouseLatitude((Double) res.get("houseLatitude"));
 			user.setHouseLongitude((Double) res.get("houseLongitude"));
+			user.setIdImage(res.get("idImage") != null ? res.get("idImage").toString() : null);
 			user.setLastRefresh(res.get("lastRefresh") != null ? res.get("lastRefresh").toString() : null);
 			user.setMail(res.get("mail") != null ? res.get("mail").toString() : null);
 			user.setPhone(res.get("phone") != null ? res.get("phone").toString() : null);
@@ -108,6 +111,7 @@ public class UserDAO extends AbstractDAO<User>{
 			user.setCurrentLongitude((Double) res.get("currentLongitude"));
 			user.setHouseLatitude((Double) res.get("houseLatitude"));
 			user.setHouseLongitude((Double) res.get("houseLongitude"));
+			user.setIdImage(res.get("idImage") != null ? res.get("idImage").toString() : null);
 			user.setLastRefresh(res.get("lastRefresh") != null ? res.get("lastRefresh").toString() : null);
 			user.setMail(res.get("mail") != null ? res.get("mail").toString() : null);
 			user.setPhone(res.get("phone") != null ? res.get("phone").toString() : null);
